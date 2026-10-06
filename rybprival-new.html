@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Рыболовный привал — Магазин прикормки и наживки</title>
+<style>
+:root{--green:#2d6a4f;--green-l:#40916c;--green-d:#1b4332;--bg:#f8f9fa;--white:#fff;--dark:#1b2a1f;--gray:#6c757d;--orange:#e76f51;--yellow:#f4a261;--radius:12px;--shadow:0 2px 12px rgba(0,0,0,.08)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--dark);line-height:1.6}
+/* HEADER */
+header{background:var(--green-d);color:var(--white);position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.2)}
+.nav{max-width:1200px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{font-size:24px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:8px}
+.logo span{font-size:28px}
+.nav-links{display:flex;gap:24px;list-style:none}
+.nav-links a{color:var(--white);text-decoration:none;font-weight:600;cursor:pointer;transition:color .2s}
+.nav-links a:hover{color:var(--yellow)}
+.cart-btn{background:var(--green-l);color:var(--white);border:none;padding:10px 18px;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;position:relative;transition:background .2s}
+.cart-btn:hover{background:var(--green)}
+.cart-count{background:var(--orange);color:var(--white);border-radius:50%;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;margin-left:6px}
+.burger{display:none;background:none;border:none;color:var(--white);font-size:28px;cursor:pointer}
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--green-d),var(--green));color:var(--white);text-align:center;padding:60px 20px}
+.hero h1{font-size:38px;margin-bottom:12px}
+.hero p{font-size:20px;opacity:.9;margin-bottom:24px;max-width:600px;margin-left:auto;margin-right:auto}
+.hero-btn{background:var(--orange);color:var(--white);border:none;padding:14px 36px;border-radius:8px;font-size:18px;font-weight:700;cursor:pointer;transition:transform .2s}
+.hero-btn:hover{transform:scale(1.05)}
+/* CONTAINER */
+.container{max-width:1200px;margin:0 auto;padding:20px}
+.section-title{font-size:28px;font-weight:800;margin:30px 0 20px;text-align:center;color:var(--green-d)}
+/* CATEGORIES */
+.categories{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:30px}
+.cat-btn{background:var(--white);border:2px solid var(--green-l);color:var(--green-d);padding:8px 18px;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.cat-btn:hover{background:var(--green-l);color:var(--white)}
+.cat-btn.active{background:var(--green-d);color:var(--white);border-color:var(--green-d)}
+/* SEARCH */
+.search-wrap{display:flex;justify-content:center;margin-bottom:20px}
+.search-input{width:100%;max-width:400px;padding:10px 16px;border:2px solid var(--green-l);border-radius:8px;font-size:15px;outline:none}
+.search-input:focus{border-color:var(--green-d)}
+/* PRODUCTS */
+.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.product-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s}
+.product-card:hover{transform:translateY(-4px);box-shadow:0 6px 20px rgba(0,0,0,.12)}
+.product-img{height:120px;display:flex;align-items:center;justify-content:center;font-size:56px;background:linear-gradient(135deg,#d8f3dc,#b7e4c7)}
+.product-badge{position:absolute;background:var(--orange);color:var(--white);padding:4px 12px;border-radius:0 0 0 8px;font-size:12px;font-weight:700;top:0;right:0}
+.product-badge.new{background:var(--green-l)}
+.product-info{padding:16px;flex-grow:1;display:flex;flex-direction:column}
+.product-name{font-size:17px;font-weight:700;margin-bottom:4px}
+.product-desc{font-size:14px;color:var(--gray);margin-bottom:8px;flex-grow:1}
+.product-price{font-size:22px;font-weight:800;color:var(--green-d);margin-bottom:12px}
+.add-btn{background:var(--green);color:var(--white);border:none;padding:10px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;width:100%}
+.add-btn:hover{background:var(--green-d)}
+/* CART DRAWER */
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+.cart-overlay.open{opacity:1;visibility:visible}
+.cart-drawer{position:fixed;right:0;top:0;bottom:0;width:400px;max-width:90vw;background:var(--white);z-index:201;transform:translateX(100%);transition:transform .3s;display:flex;flex-direction:column}
+.cart-drawer.open{transform:translateX(0)}
+.cart-header{background:var(--green-d);color:var(--white);padding:16px 20px;display:flex;justify-content:space-between;align-items:center}
+.cart-header h2{font-size:20px}
+.cart-close{background:none;border:none;color:var(--white);font-size:28px;cursor:pointer}
+.cart-items{flex-grow:1;overflow-y:auto;padding:16px 20px}
+.cart-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #e9ecef;align-items:center}
+.cart-item-emoji{font-size:32px;width:48px;height:48px;display:flex;align-items:center;justify-content:center;background:#d8f3dc;border-radius:8px}
+.cart-item-info{flex-grow:1}
+.cart-item-name{font-weight:700;font-size:15px}
+.cart-item-price{color:var(--green-d);font-weight:700;font-size:14px}
+.cart-qty{display:flex;align-items:center;gap:8px;margin-top:4px}
+.qty-btn{background:var(--green-l);color:var(--white);border:none;width:26px;height:26px;border-radius:6px;font-size:16px;cursor:pointer;font-weight:700}
+.qty-btn:hover{background:var(--green-d)}
+.qty-val{font-weight:700;min-width:20px;text-align:center}
+.cart-remove{background:none;border:none;color:var(--orange);font-size:20px;cursor:pointer;padding:4px}
+.cart-footer{padding:20px;border-top:2px solid #e9ecef}
+.cart-total{display:flex;justify-content:space-between;font-size:20px;font-weight:800;margin-bottom:16px}
+.cart-total span:last-child{color:var(--green-d)}
+.checkout-btn{background:var(--orange);color:var(--white);border:none;padding:14px;border-radius:8px;font-size:17px;font-weight:700;cursor:pointer;width:100%;transition:background .2s}
+.checkout-btn:hover{background:#c5573a}
+.cart-empty{text-align:center;padding:40px 20px;color:var(--gray)}
+.cart-empty div{font-size:64px;margin-bottom:12px}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{opacity:1;visibility:visible}
+.modal{background:var(--white);border-radius:var(--radius);max-width:500px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.modal-header{background:var(--green-d);color:var(--white);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-radius:var(--radius) var(--radius) 0 0;position:sticky;top:0}
+.modal-header h2{font-size:20px}
+.modal-close{background:none;border:none;color:var(--white);font-size:28px;cursor:pointer}
+.modal-body{padding:24px 20px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-weight:700;margin-bottom:4px;font-size:15px}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:10px 14px;border:2px solid #dee2e6;border-radius:8px;font-size:15px;font-family:inherit;outline:none}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--green-l)}
+.form-group textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.submit-btn{background:var(--green);color:var(--white);border:none;padding:14px;border-radius:8px;font-size:17px;font-weight:700;cursor:pointer;width:100%;transition:background .2s;margin-top:8px}
+.submit-btn:hover{background:var(--green-d)}
+.order-summary{background:#f8f9fa;border-radius:8px;padding:16px;margin-bottom:20px}
+.order-summary h3{font-size:16px;margin-bottom:8px}
+.order-summary-item{display:flex;justify-content:space-between;font-size:14px;padding:4px 0}
+.order-total{border-top:2px solid #dee2e6;margin-top:8px;padding-top:8px;font-weight:800;font-size:17px;display:flex;justify-content:space-between}
+/* ABOUT */
+.about{background:var(--white);border-radius:var(--radius);padding:40px;margin:40px auto;max-width:900px;box-shadow:var(--shadow);text-align:center}
+.about h2{color:var(--green-d);font-size:28px;margin-bottom:16px}
+.about p{font-size:17px;color:var(--gray);max-width:700px;margin:0 auto 24px}
+.stats{display:flex;justify-content:center;gap:40px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-num{font-size:36px;font-weight:800;color:var(--green-d)}
+.stat-label{font-size:14px;color:var(--gray)}
+/* CONTACTS */
+.contacts{background:var(--white);border-radius:var(--radius);padding:40px;margin:40px auto;max-width:700px;box-shadow:var(--shadow)}
+.contacts h2{color:var(--green-d);text-align:center;margin-bottom:24px}
+.contacts-info{text-align:center;margin-bottom:24px}
+.contacts-info p{font-size:17px;margin-bottom:8px}
+.contacts-info a{color:var(--green-d);text-decoration:none;font-weight:700}
+/* FOOTER */
+footer{background:var(--green-d);color:var(--white);text-align:center;padding:30px 20px;margin-top:40px}
+footer p{margin-bottom:8px;opacity:.9}
+.social-links{display:flex;justify-content:center;gap:16px;margin-top:12px}
+.social-links a{color:var(--white);font-size:24px;text-decoration:none;transition:color .2s}
+.social-links a:hover{color:var(--yellow)}
+/* ADMIN */
+.admin-fab{position:fixed;bottom:20px;right:20px;width:54px;height:54px;border-radius:50%;background:var(--green-d);color:var(--white);border:none;font-size:24px;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,.3);z-index:150;transition:transform .2s}
+.admin-fab:hover{transform:scale(1.1)}
+.admin-panel{position:fixed;bottom:80px;right:20px;width:420px;max-width:92vw;max-height:80vh;background:var(--white);border-radius:var(--radius);box-shadow:0 8px 30px rgba(0,0,0,.25);z-index:151;display:none;flex-direction:column;overflow:hidden}
+.admin-panel.open{display:flex}
+.admin-tabs{display:flex;background:var(--bg);border-bottom:1px solid #e9ecef}
+.admin-tab{flex:1;padding:10px;text-align:center;font-weight:700;font-size:14px;cursor:pointer;border:none;background:none;color:var(--gray);border-bottom:3px solid transparent}
+.admin-tab.active{color:var(--green-d);border-bottom-color:var(--green-d);background:var(--white)}
+.admin-content{padding:16px;overflow-y:auto;flex-grow:1}
+.admin-product-form{margin-bottom:16px}
+.admin-product-form input,.admin-product-form select{width:100%;padding:8px 12px;border:1px solid #dee2e6;border-radius:6px;margin-bottom:8px;font-size:14px}
+.admin-product-form label{font-size:13px;font-weight:600;display:block;margin-bottom:2px;margin-top:6px}
+.admin-btn{background:var(--green);color:var(--white);border:none;padding:8px 16px;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;width:100%}
+.admin-btn:hover{background:var(--green-d)}
+.admin-btn.orange{background:var(--orange)}
+.admin-btn.orange:hover{background:#c5573a}
+.admin-product-list-item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid #eee;font-size:14px}
+.admin-product-list-item .name{font-weight:600;flex-grow:1}
+.admin-product-list-item .price{color:var(--green-d);font-weight:700;margin:0 8px}
+.admin-edit-btn,.admin-del-btn{background:none;border:none;cursor:pointer;font-size:18px;padding:4px}
+.admin-del-btn{color:var(--orange)}
+.admin-edit-btn{color:var(--green-l)}
+.admin-edit-btn:hover{color:var(--green-d)}
+.admin-settings input{width:100%;padding:8px 12px;border:1px solid #dee2e6;border-radius:6px;margin-bottom:8px;font-size:14px}
+.admin-settings label{font-size:13px;font-weight:600;display:block;margin-bottom:2px;margin-top:6px}
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--green-d);color:var(--white);padding:14px 28px;border-radius:8px;font-size:16px;font-weight:600;z-index:400;opacity:0;transition:transform .3s,opacity .3s;box-shadow:0 4px 15px rgba(0,0,0,.2)}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+/* RESPONSIVE */
+@media(max-width:768px){
+.nav-links{display:none;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:var(--green-d);padding:20px;gap:16px}
+.nav-links.open{display:flex}
+.burger{display:block}
+.hero h1{font-size:28px}
+.hero p{font-size:16px}
+.form-row{grid-template-columns:1fr}
+.stats{gap:20px}
+.stat-num{font-size:28px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo" onclick="scrollToTop()">🎣 Рыболовный привал</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a onclick="scrollToSection('catalog')">Каталог</a></li>
+      <li><a onclick="scrollToSection('about')">О нас</a></li>
+      <li><a onclick="scrollToSection('contacts')">Контакты</a></li>
+    </ul>
+    <button class="cart-btn" onclick="openCart()">🛒 Корзина<span class="cart-count" id="cartCount">0</span></button>
+    <button class="burger" onclick="toggleBurger()">☰</button>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>🎣 Лучшая прикормка и наживка для рыбалки</h1>
+  <p>Всё для удачной рыбалки — прикормка, бойлы, живая наживка, аттрактанты и снаряжение. Доставка по всей России.</p>
+  <button class="hero-btn" onclick="scrollToSection('catalog')">Перейти в каталог →</button>
+</div>
+
+<div class="container">
+  <h2 class="section-title" id="catalog">Каталог товаров</h2>
+  <div class="search-wrap">
+    <input type="text" class="search-input" id="searchInput" placeholder="🔍 Поиск по названию..." oninput="renderProducts()">
+  </div>
+  <div class="categories" id="categories"></div>
+  <div class="products" id="products"></div>
+</div>
+
+<div class="about" id="about">
+  <h2>О магазине «Рыболовный привал»</h2>
+  <p>Мы — команда рыболовов с 15-летним опытом. Знаем, что работает на воде, и продаём только проверенную прикормку и наживку. Доставляем по всей России.</p>
+  <div class="stats">
+    <div class="stat"><div class="stat-num">15+</div><div class="stat-label">лет опыта</div></div>
+    <div class="stat"><div class="stat-num">5000+</div><div class="stat-label">довольных клиентов</div></div>
+    <div class="stat"><div class="stat-num">50+</div><div class="stat-label">товаров в каталоге</div></div>
+    <div class="stat"><div class="stat-num">24ч</div><div class="stat-label">доставка</div></div>
+  </div>
+</div>
+
+<div class="contacts" id="contacts">
+  <h2>Контакты</h2>
+  <div class="contacts-info">
+    <p>📍 г. Саратов, ул. Рыбная, д. 15</p>
+    <p>📞 <a href="tel:+79000000000" id="contactPhone">+7 (900) 000-00-00</a></p>
+    <p>✉️ <a href="mailto:info@rybprival.ru" id="contactEmail">info@rybprival.ru</a></p>
+    <p>🕐 Пн–Вс: 8:00–20:00</p>
+  </div>
+  <form onsubmit="submitContact(event)">
+    <div class="form-group"><label>Ваше имя</label><input type="text" id="contactName" required placeholder="Иван"></div>
+    <div class="form-group"><label>Телефон</label><input type="tel" id="contactPhoneInput" required placeholder="+7 900 000 00 00"></div>
+    <div class="form-group"><label>Сообщение</label><textarea id="contactMsg" required placeholder="Ваш вопрос..."></textarea></div>
+    <button type="submit" class="submit-btn">Отправить сообщение</button>
+  </form>
+</div>
+
+<footer>
+  <p><strong>🎣 Рыболовный привал</strong> — магазин прикормки и наживки</p>
+  <p id="footerPhone">📞 +7 (900) 000-00-00 &nbsp; ✉️ info@rybprival.ru</p>
+  <div class="social-links">
+    <a href="#" title="ВКонтакте">🔵</a>
+    <a href="#" title="Telegram">✈️</a>
+    <a href="#" title="WhatsApp">💬</a>
+    <a href="#" title="YouTube">📺</a>
+  </div>
+  <p style="margin-top:12px;font-size:13px;opacity:.7">© 2026 Рыболовный привал. Все права защищены.</p>
+</footer>
+
+<!-- CART OVERLAY + DRAWER -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <h2>🛒 Ваша корзина</h2>
+    <button class="cart-close" onclick="closeCart()">×</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total"><span>Итого:</span><span id="cartTotal">0 ₽</span></div>
+    <button class="checkout-btn" onclick="openCheckout()">Оформить заказ</button>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkoutModal" onclick="closeModalOnOverlay(event,'checkoutModal')">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Оформление заказа</h2>
+      <button class="modal-close" onclick="closeModal('checkoutModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="order-summary" id="orderSummary"></div>
+      <form onsubmit="submitOrder(event)">
+        <div class="form-group"><label>Имя *</label><input type="text" id="orderName" required placeholder="Иван"></div>
+        <div class="form-row">
+          <div class="form-group"><label>Телефон *</label><input type="tel" id="orderPhone" required placeholder="+7 900 000 00 00"></div>
+          <div class="form-group"><label>Email *</label><input type="email" id="orderEmail" required placeholder="ivan@mail.ru"></div>
+        </div>
+        <div class="form-group"><label>Адрес доставки *</label><input type="text" id="orderAddress" required placeholder="Город, улица, дом, квартира"></div>
+        <div class="form-group"><label>Способ оплаты</label>
+          <select id="orderPayment">
+            <option value="card">Банковская карта</option>
+            <option value="transfer">Перевод на карту</option>
+            <option value="cod">Наложенный платёж (при получении)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Комментарий к заказу</label><textarea id="orderComment" placeholder="Удобное время доставки, пожелания..."></textarea></div>
+        <button type="submit" class="submit-btn">Подтвердить заказ</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<button class="admin-fab" onclick="toggleAdmin()" title="Админка">⚙️</button>
+<div class="admin-panel" id="adminPanel">
+  <div class="admin-tabs">
+    <button class="admin-tab active" onclick="switchAdminTab('products',this)">Товары</button>
+    <button class="admin-tab" onclick="switchAdminTab('settings',this)">Настройки</button>
+    <button class="admin-tab" onclick="switchAdminTab('export',this)">Экспорт</button>
+  </div>
+  <div class="admin-content" id="adminContent"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ====== НАЧАЛЬНЫЕ ТОВАРЫ ======
+var DEFAULT_PRODUCTS = [
+  {id:1,name:"Прикормка «Карповая» 1кг",desc:"Сухая прикормка для карпа и карася",price:350,cat:"dry",icon:"🌾",badge:"hit"},
+  {id:2,name:"Прикормка «Фидерная» 1кг",desc:"Для фидерной ловли, быстрый распад",price:320,cat:"dry",icon:"🌾",badge:""},
+  {id:3,name:"Прикормка «Лещовая» 1кг",desc:"Тёмная прикормка для леща",price:380,cat:"dry",icon:"🌾",badge:""},
+  {id:4,name:"Бойлы «Сливочно-карамель» 250г",desc:"Тонущие бойлы для карпа",price:600,cat:"boilies",icon:"🍯",badge:"hit"},
+  {id:5,name:"Бойлы «Клубника» 250г",desc:"Сладкие бойлы для тёплой воды",price:580,cat:"boilies",icon:"🍓",badge:""},
+  {id:6,name:"Бойлы «Fishmix» 250г",desc:"Рыбный вкус для холодной воды",price:620,cat:"boilies",icon:"🐟",badge:"new"},
+  {id:7,name:"Опарыш крупный 50г",desc:"Живой опарыш, большая упаковка",price:150,cat:"live",icon:"🪱",badge:""},
+  {id:8,name:"Червь навозный 30шт",desc:"Живые навозные черви",price:200,cat:"live",icon:"🪱",badge:"hit"},
+  {id:9,name:"Мотыль кормовой 100г",desc:"Кормовой мотыль для прикормки",price:250,cat:"live",icon:"🪱",badge:""},
+  {id:10,name:"Кукуруза консервированная 300г",desc:"Сладкая кукуруза для насадки",price:120,cat:"plant",icon:"🌽",badge:""},
+  {id:11,name:"Перловка с ароматом 200г",desc:"Запаренная перловка с аттрактантом",price:140,cat:"plant",icon:"🌾",badge:"new"},
+  {id:12,name:"Горох нут варёный 200г",desc:"Варёный нут для карпа",price:130,cat:"plant",icon:"🟢",badge:""},
+  {id:13,name:"Аттрактант «Карп» 50мл",desc:"Жидкий ароматизатор для карпа",price:280,cat:"attractant",icon:"💧",badge:"hit"},
+  {id:14,name:"Аттрактант «Лещ» 50мл",desc:"Ароматизатор для леща и плотвы",price:260,cat:"attractant",icon:"💧",badge:""},
+  {id:15,name:"Аттрактант «Щука» 50мл",desc:"Хищный аромат для живцовой ловли",price:300,cat:"attractant",icon:"💧",badge:"new"},
+  {id:16,name:"Кормушка фидерная 30г",desc:"Клетка для фидерной ловли",price:180,cat:"gear",icon:"⚙️",badge:""},
+  {id:17,name:"Кормушка метод 40г",desc:"Методная кормушка для карпа",price:220,cat:"gear",icon:"⚙️",badge:""},
+  {id:18,name:"Поводочница с крючками",desc:"10 готовых поводков с крючками",price:350,cat:"gear",icon:"🪝",badge:""},
+  {id:19,name:"Пеллетс «Карп» 500г",desc:"Тонущие гранулы для прикормки",price:340,cat:"pellets",icon:"🟤",badge:""},
+  {id:20,name:"Пеллетс «Halibut» 500г",desc:"Морские гранулы для хищника",price:380,cat:"pellets",icon:"🟤",badge:"new"}
+];
+
+var CATEGORIES = [
+  {id:"all",name:"Все товары"},
+  {id:"dry",name:"Сухая прикормка"},
+  {id:"boilies",name:"Бойлы"},
+  {id:"live",name:"Живая наживка"},
+  {id:"plant",name:"Растительные насадки"},
+  {id:"attractant",name:"Аттрактанты"},
+  {id:"pellets",name:"Пеллетс"},
+  {id:"gear",name:"Снаряжение"}
+];
+
+// ====== СОСТОЯНИЕ ======
+var products = [];
+var cart = [];
+var currentCat = "all";
+var editingProductId = null;
+var settings = {formspreeId:"",email:"info@rybprival.ru",phone:"+7 (900) 000-00-00",shopName:"Рыболовный привал"};
+
+// ====== ИНИЦИАЛИЗАЦИЯ ======
+function init(){
+  var savedProducts = localStorage.getItem("rp_products");
+  var savedSettings = localStorage.getItem("rp_settings");
+  var savedCart = localStorage.getItem("rp_cart");
+  
+  products = savedProducts ? JSON.parse(savedProducts) : JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+  if(savedSettings){settings = Object.assign(settings,JSON.parse(savedSettings));}
+  if(savedCart){cart = JSON.parse(savedCart);}
+  
+  renderCategories();
+  renderProducts();
+  updateCart();
+  applySettings();
+  renderAdmin();
+}
+
+function saveProducts(){localStorage.setItem("rp_products",JSON.stringify(products));}
+function saveSettings(){localStorage.setItem("rp_settings",JSON.stringify(settings));}
+function saveCart(){localStorage.setItem("rp_cart",JSON.stringify(cart));}
+
+// ====== КАТЕГОРИИ ======
+function renderCategories(){
+  var html = "";
+  for(var i=0;i<CATEGORIES.length;i++){
+    var c = CATEGORIES[i];
+    var cls = c.id===currentCat ? "cat-btn active" : "cat-btn";
+    html += '<button class="'+cls+'" onclick="setCategory(\''+c.id+'\')">'+c.name+'</button>';
+  }
+  document.getElementById("categories").innerHTML = html;
+}
+
+function setCategory(catId){
+  currentCat = catId;
+  renderCategories();
+  renderProducts();
+}
+
+// ====== ТОВАРЫ ======
+function renderProducts(){
+  var search = document.getElementById("searchInput").value.toLowerCase().trim();
+  var html = "";
+  var count = 0;
+  for(var i=0;i<products.length;i++){
+    var p = products[i];
+    if(currentCat!=="all" && p.cat!==currentCat) continue;
+    if(search && p.name.toLowerCase().indexOf(search)===-1) continue;
+    count++;
+    var badgeHtml = "";
+    if(p.badge==="hit") badgeHtml = '<div class="product-badge">🔥 Хит</div>';
+    else if(p.badge==="new") badgeHtml = '<div class="product-badge new">✨ Новинка</div>';
+    html += '<div class="product-card" style="position:relative">'+
+      '<div class="product-img">'+(p.icon||"🎣")+'</div>'+
+      badgeHtml+
+      '<div class="product-info">'+
+        '<div class="product-name">'+p.name+'</div>'+
+        '<div class="product-desc">'+p.desc+'</div>'+
+        '<div class="product-price">'+p.price+' ₽</div>'+
+        '<button class="add-btn" onclick="addToCart('+p.id+')">🛒 В корзину</button>'+
+      '</div>'+
+    '</div>';
+  }
+  if(count===0){
+    html = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:#6c757d;font-size:18px">Товары не найдены. Попробуйте изменить поиск или категорию.</div>';
+  }
+  document.getElementById("products").innerHTML = html;
+}
+
+// ====== КОРЗИНА ======
+function addToCart(productId){
+  var product = null;
+  for(var i=0;i<products.length;i++){
+    if(products[i].id===productId){product=products[i];break;}
+  }
+  if(!product) return;
+  
+  var found = false;
+  for(var i=0;i<cart.length;i++){
+    if(cart[i].id===productId){cart[i].qty++;found=true;break;}
+  }
+  if(!found){cart.push({id:product.id,name:product.name,price:product.price,icon:product.icon,qty:1});}
+  
+  saveCart();
+  updateCart();
+  showToast("✅ "+product.name+" добавлен в корзину");
+}
+
+function removeFromCart(productId){
+  for(var i=0;i<cart.length;i++){
+    if(cart[i].id===productId){cart.splice(i,1);break;}
+  }
+  saveCart();
+  updateCart();
+}
+
+function changeQty(productId,delta){
+  for(var i=0;i<cart.length;i++){
+    if(cart[i].id===productId){
+      cart[i].qty += delta;
+      if(cart[i].qty<=0){cart.splice(i,1);}
+      break;
+    }
+  }
+  saveCart();
+  updateCart();
+}
+
+function getCartTotal(){
+  var total = 0;
+  for(var i=0;i<cart.length;i++){total += cart[i].price*cart[i].qty;}
+  return total;
+}
+
+function updateCart(){
+  var count = 0;
+  for(var i=0;i<cart.length;i++){count += cart[i].qty;}
+  document.getElementById("cartCount").textContent = count;
+  
+  var itemsHtml = "";
+  if(cart.length===0){
+    itemsHtml = '<div class="cart-empty"><div>🛒</div><p>Корзина пуста</p><p style="font-size:14px">Добавьте товары из каталога</p></div>';
+    document.getElementById("cartFooter").style.display = "none";
+  } else {
+    for(var i=0;i<cart.length;i++){
+      var item = cart[i];
+      itemsHtml += '<div class="cart-item">'+
+        '<div class="cart-item-emoji">'+(item.icon||"🎣")+'</div>'+
+        '<div class="cart-item-info">'+
+          '<div class="cart-item-name">'+item.name+'</div>'+
+          '<div class="cart-item-price">'+item.price+' ₽ × '+item.qty+' = '+(item.price*item.qty)+' ₽</div>'+
+          '<div class="cart-qty">'+
+            '<button class="qty-btn" onclick="changeQty('+item.id+',-1)">−</button>'+
+            '<span class="qty-val">'+item.qty+'</span>'+
+            '<button class="qty-btn" onclick="changeQty('+item.id+',1)">+</button>'+
+            '<button class="cart-remove" onclick="removeFromCart('+item.id+')" style="margin-left:auto">🗑️</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
+    }
+    document.getElementById("cartFooter").style.display = "block";
+  }
+  document.getElementById("cartItems").innerHTML = itemsHtml;
+  document.getElementById("cartTotal").textContent = getCartTotal()+" ₽";
+}
+
+function openCart(){
+  document.getElementById("cartOverlay").classList.add("open");
+  document.getElementById("cartDrawer").classList.add("open");
+}
+
+function closeCart(){
+  document.getElementById("cartOverlay").classList.remove("open");
+  document.getElementById("cartDrawer").classList.remove("open");
+}
+
+// ====== ОФОРМЛЕНИЕ ЗАКАЗА ======
+function openCheckout(){
+  if(cart.length===0){showToast("Корзина пуста!");return;}
+  var summaryHtml = "<h3>Ваш заказ:</h3>";
+  for(var i=0;i<cart.length;i++){
+    var item = cart[i];
+    summaryHtml += '<div class="order-summary-item"><span>'+item.name+' × '+item.qty+'</span><span>'+(item.price*item.qty)+' ₽</span></div>';
+  }
+  summaryHtml += '<div class="order-total"><span>Итого:</span><span>'+getCartTotal()+' ₽</span></div>';
+  document.getElementById("orderSummary").innerHTML = summaryHtml;
+  document.getElementById("checkoutModal").classList.add("open");
+}
+
+function closeModal(id){
+  document.getElementById(id).classList.remove("open");
+}
+
+function closeModalOnOverlay(event,id){
+  if(event.target===event.currentTarget){closeModal(id);}
+}
+
+function submitOrder(event){
+  event.preventDefault();
+  var name = document.getElementById("orderName").value;
+  var phone = document.getElementById("orderPhone").value;
+  var email = document.getElementById("orderEmail").value;
+  var address = document.getElementById("orderAddress").value;
+  var payment = document.getElementById("orderPayment").value;
+  var paymentText = document.getElementById("orderPayment").options[document.getElementById("orderPayment").selectedIndex].text;
+  var comment = document.getElementById("orderComment").value;
+  var total = getCartTotal();
+  
+  var orderText = "=== НОВЫЙ ЗАКАЗ ===\n";
+  orderText += "Магазин: "+settings.shopName+"\n\n";
+  orderText += "ТОВАРЫ:\n";
+  for(var i=0;i<cart.length;i++){
+    orderText += "— "+cart[i].name+" × "+cart[i].qty+" = "+(cart[i].price*cart[i].qty)+" ₽\n";
+  }
+  orderText += "\nИТОГО: "+total+" ₽\n\n";
+  orderText += "ДАННЫЕ КЛИЕНТА:\n";
+  orderText += "Имя: "+name+"\n";
+  orderText += "Телефон: "+phone+"\n";
+  orderText += "Email: "+email+"\n";
+  orderText += "Адрес: "+address+"\n";
+  orderText += "Оплата: "+paymentText+"\n";
+  if(comment) orderText += "Комментарий: "+comment+"\n";
+  orderText += "\nДата: "+new Date().toLocaleString("ru-RU");
+  
+  if(settings.formspreeId){
+    var formData = new FormData();
+    formData.append("name",name);
+    formData.append("phone",phone);
+    formData.append("email",email);
+    formData.append("address",address);
+    formData.append("payment",paymentText);
+    formData.append("comment",comment);
+    formData.append("total",total+" ₽");
+    formData.append("order",orderText);
+    formData.append("_subject","Новый заказ — "+settings.shopName);
+    
+    fetch("https://formspree.io/f/"+settings.formspreeId,{
+      method:"POST",
+      body:formData,
+      headers:{"Accept":"application/json"}
+    }).then(function(r){return r.json();}).then(function(data){
+      onOrderSuccess();
+    }).catch(function(err){
+      onOrderSuccess();
+    });
+  } else {
+    onOrderSuccess();
+  }
+}
+
+function onOrderSuccess(){
+  cart = [];
+  saveCart();
+  updateCart();
+  closeModal("checkoutModal");
+  if(settings.formspreeId){
+    showToast("✅ Заказ оформлен! Мы свяжемся с вами в течение часа.");
+  } else {
+    showToast("⚠️ Заказа оформлен! Не забудьте указать Formspree ID в админке для получения заказов на email.");
+  }
+}
+
+// ====== ФОРМА ОБРАТНОЙ СВЯЗИ ======
+function submitContact(event){
+  event.preventDefault();
+  var name = document.getElementById("contactName").value;
+  var phone = document.getElementById("contactPhoneInput").value;
+  var msg = document.getElementById("contactMsg").value;
+  
+  if(settings.formspreeId){
+    var formData = new FormData();
+    formData.append("name",name);
+    formData.append("phone",phone);
+    formData.append("message",msg);
+    formData.append("_subject","Сообщение с сайта — "+settings.shopName);
+    
+    fetch("https://formspree.io/f/"+settings.formspreeId,{
+      method:"POST",
+      body:formData,
+      headers:{"Accept":"application/json"}
+    }).then(function(r){return r.json();}).then(function(){
+      showToast("✅ Сообщение отправлено!");
+    }).catch(function(){
+      showToast("✅ Сообщение отправлено!");
+    });
+  } else {
+    showToast("⚠️ Укажите Formspree ID в админке для получения сообщений на email.");
+  }
+  event.target.reset();
+}
+
+// ====== АДМИНКА ======
+function toggleAdmin(){
+  document.getElementById("adminPanel").classList.toggle("open");
+  if(document.getElementById("adminPanel").classList.contains("open")){
+    renderAdmin();
+  }
+}
+
+function switchAdminTab(tab,btn){
+  document.querySelectorAll(".admin-tab").forEach(function(t){t.classList.remove("active");});
+  btn.classList.add("active");
+  renderAdmin(tab);
+}
+
+function renderAdmin(tab){
+  if(!tab) tab = "products";
+  var content = document.getElementById("adminContent");
+  
+  if(tab==="products"){
+    var formHtml = '<div class="admin-product-form">'+
+      '<label>Название товара</label>'+
+      '<input type="text" id="admName" placeholder="Напр. Прикормка «Карповая» 1кг">'+
+      '<label>Описание</label>'+
+      '<input type="text" id="admDesc" placeholder="Краткое описание">'+
+      '<div class="form-row" style="grid-template-columns:1fr 1fr">'+
+        '<div><label>Цена (₽)</label><input type="number" id="admPrice" placeholder="350" min="1"></div>'+
+        '<div><label>Категория</label><select id="admCat">'+
+          CATEGORIES.filter(function(c){return c.id!=="all";}).map(function(c){return '<option value="'+c.id+'">'+c.name+'</option>';}).join("")+
+        '</select></div>'+
+      '</div>'+
+      '<div class="form-row" style="grid-template-columns:1fr 1fr">'+
+        '<div><label>Иконка (эмодзи)</label><input type="text" id="admIcon" placeholder="🎣" maxlength="4"></div>'+
+        '<div><label>Бейдж</label><select id="admBadge">'+
+          '<option value="">Нет</option>'+
+          '<option value="hit">🔥 Хит продаж</option>'+
+          '<option value="new">✨ Новинка</option>'+
+        '</select></div>'+
+      '</div>'+
+      '<button class="admin-btn" id="admSaveBtn" onclick="saveProduct()">Добавить товар</button>'+
+      (editingProductId?'<button class="admin-btn orange" style="margin-top:8px" onclick="cancelEdit()">Отменить редактирование</button>':'')+
+    '</div>';
+    
+    var listHtml = '<h3 style="margin:16px 0 8px;font-size:16px;color:#1b4332">Список товаров ('+products.length+'):</h3>';
+    for(var i=0;i<products.length;i++){
+      var p = products[i];
+      listHtml += '<div class="admin-product-list-item">'+
+        '<span class="name">'+(p.icon||"🎣")+' '+p.name+'</span>'+
+        '<span class="price">'+p.price+'₽</span>'+
+        '<button class="admin-edit-btn" onclick="editProduct('+p.id+')" title="Редактировать">✏️</button>'+
+        '<button class="admin-del-btn" onclick="deleteProduct('+p.id+')" title="Удалить">🗑️</button>'+
+      '</div>';
+    }
+    content.innerHTML = formHtml + listHtml;
+    
+  } else if(tab==="settings"){
+    content.innerHTML = '<div class="admin-settings">'+
+      '<h3 style="margin:0 0 12px;font-size:16px;color:#1b4332">Настройки магазина</h3>'+
+      '<label>Formspree ID (для заказов на email)</label>'+
+      '<input type="text" id="setFormspree" placeholder="abcde123" value="'+(settings.formspreeId||"")+'">'+
+      '<label>Email для заказов</label>'+
+      '<input type="email" id="setEmail" value="'+(settings.email||"")+'">'+
+      '<label>Телефон</label>'+
+      '<input type="text" id="setPhone" value="'+(settings.phone||"")+'">'+
+      '<label>Название магазина</label>'+
+      '<input type="text" id="setShopName" value="'+(settings.shopName||"")+'">'+
+      '<button class="admin-btn" onclick="saveAdminSettings()">Сохранить настройки</button>'+
+      '<hr style="margin:16px 0;border:none;border-top:1px solid #eee">'+
+      '<p style="font-size:13px;color:#6c757d;line-height:1.5">Как получить Formspree ID:<br>'+
+      '1. Зайдите на formspree.io<br>'+
+      '2. Создайте форму (New Form)<br>'+
+      '3. Укажите ваш email<br>'+
+      '4. Скопируйте ID из ссылки formspree.io/f/<b>XXXX</b><br>'+
+      '5. Вставьте сюда и сохраните</p>'+
+      '<hr style="margin:16px 0;border:none;border-top:1px solid #eee">'+
+      '<button class="admin-btn orange" onclick="resetProducts()">Сбросить товары к начальным</button>'+
+    '</div>';
+    
+  } else if(tab==="export"){
+    content.innerHTML = '<div style="text-align:center;padding:10px">'+
+      '<h3 style="margin:0 0 16px;font-size:16px;color:#1b4332">Экспорт и импорт</h3>'+
+      '<button class="admin-btn" onclick="exportData()">⬇️ Скачать товары (JSON)</button>'+
+      '<hr style="margin:16px 0;border:none;border-top:1px solid #eee">'+
+      '<button class="admin-btn orange" onclick="document.getElementById(\'importFile\').click()">⬆️ Загрузить товары из файла</button>'+
+      '<input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">'+
+      '<hr style="margin:16px 0;border:none;border-top:1px solid #eee">'+
+      '<p style="font-size:13px;color:#6c757d;line-height:1.5">Экспорт сохраняет все товары в файл.'+
+      ' Импорт загружает товары из ранее сохранённого файла. Удобно для переноса между компьютерами.</p>'+
+    '</div>';
+  }
+}
+
+function saveProduct(){
+  var name = document.getElementById("admName").value.trim();
+  var desc = document.getElementById("admDesc").value.trim();
+  var price = parseInt(document.getElementById("admPrice").value);
+  var cat = document.getElementById("admCat").value;
+  var icon = document.getElementById("admIcon").value.trim() || "🎣";
+  var badge = document.getElementById("admBadge").value;
+  
+  if(!name || !desc || !price || price<1){
+    showToast("⚠️ Заполните все поля!");
+    return;
+  }
+  
+  if(editingProductId){
+    for(var i=0;i<products.length;i++){
+      if(products[i].id===editingProductId){
+        products[i].name=name;
+        products[i].desc=desc;
+        products[i].price=price;
+        products[i].cat=cat;
+        products[i].icon=icon;
+        products[i].badge=badge;
+        break;
+      }
+    }
+    editingProductId = null;
+    showToast("✅ Товар обновлён");
+  } else {
+    var newId = 1;
+    for(var i=0;i<products.length;i++){if(products[i].id>=newId) newId=products[i].id+1;}
+    products.push({id:newId,name:name,desc:desc,price:price,cat:cat,icon:icon,badge:badge});
+    showToast("✅ Товар добавлен");
+  }
+  
+  saveProducts();
+  renderProducts();
+  renderAdmin("products");
+}
+
+function editProduct(id){
+  editingProductId = id;
+  renderAdmin("products");
+  for(var i=0;i<products.length;i++){
+    if(products[i].id===id){
+      document.getElementById("admName").value = products[i].name;
+      document.getElementById("admDesc").value = products[i].desc;
+      document.getElementById("admPrice").value = products[i].price;
+      document.getElementById("admCat").value = products[i].cat;
+      document.getElementById("admIcon").value = products[i].icon||"🎣";
+      document.getElementById("admBadge").value = products[i].badge||"";
+      break;
+    }
+  }
+  document.getElementById("admSaveBtn").textContent = "Сохранить изменения";
+}
+
+function cancelEdit(){
+  editingProductId = null;
+  renderAdmin("products");
+}
+
+function deleteProduct(id){
+  if(!confirm("Удалить этот товар?")) return;
+  for(var i=0;i<products.length;i++){
+    if(products[i].id===id){products.splice(i,1);break;}
+  }
+  saveProducts();
+  renderProducts();
+  renderAdmin("products");
+  showToast("✅ Товар удалён");
+}
+
+function saveAdminSettings(){
+  settings.formspreeId = document.getElementById("setFormspree").value.trim();
+  settings.email = document.getElementById("setEmail").value.trim();
+  settings.phone = document.getElementById("setPhone").value.trim();
+  settings.shopName = document.getElementById("setShopName").value.trim();
+  saveSettings();
+  applySettings();
+  showToast("✅ Настройки сохранены");
+}
+
+function applySettings(){
+  if(settings.email){
+    var el = document.getElementById("contactEmail");
+    if(el){el.href="mailto:"+settings.email;el.textContent=settings.email;}
+    var fp = document.getElementById("footerPhone");
+    if(fp){fp.innerHTML="📞 "+settings.phone+" &nbsp; ✉️ "+settings.email;}
+  }
+  if(settings.phone){
+    var el2 = document.getElementById("contactPhone");
+    if(el2){el2.href="tel:"+settings.phone.replace(/\s/g,"");el2.textContent=settings.phone;}
+  }
+}
+
+function resetProducts(){
+  if(!confirm("Сбросить все товары к начальным? Текущие изменения будут потеряны.")) return;
+  products = JSON.parse(JSON.stringify(DEFAULT_PRODUCTS));
+  saveProducts();
+  renderProducts();
+  renderAdmin("products");
+  showToast("✅ Товары сброшены");
+}
+
+function exportData(){
+  var blob = new Blob([JSON.stringify(products,null,2)],{type:"application/json"});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "rybprival-products.json";
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast("✅ Файл сохранён");
+}
+
+function importData(event){
+  var file = event.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      var data = JSON.parse(e.target.result);
+      if(Array.isArray(data) && data.length>0){
+        products = data;
+        saveProducts();
+        renderProducts();
+        renderAdmin("products");
+        showToast("✅ Импортировано "+data.length+" товаров");
+      } else {
+        showToast("⚠️ Файл не содержит товаров");
+      }
+    } catch(err){
+      showToast("⚠️ Ошибка чтения файла");
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ====== УТИЛИТЫ ======
+function scrollToSection(id){
+  document.getElementById(id).scrollIntoView({behavior:"smooth"});
+  document.getElementById("navLinks").classList.remove("open");
+}
+
+function scrollToTop(){
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function toggleBurger(){
+  document.getElementById("navLinks").classList.toggle("open");
+}
+
+var toastTimer = null;
+function showToast(msg){
+  var t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){t.classList.remove("show");},3000);
+}
+
+// ====== СТАРТ ======
+init();
+</script>
+</body>
+</html>
